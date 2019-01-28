@@ -26,20 +26,20 @@ import java.io.InputStreamReader;
 
 public class MotoMobBatteryService extends Service {
     private Icon[] icon_percent = new Icon[101];
-    public NotificationManager notificationmanager = null;
-    NotificationChannel notificationchannel = null;
-    public static final String CHANNEL_ID  = "default";
-    public static final String CHANNEL_TAG = "silent";
+    private NotificationManager notificationmanager = null;
+    private NotificationChannel notificationchannel = null;
+    private static final String CHANNEL_ID  = "default";
+    private static final String CHANNEL_TAG = "silent";
 
     //once using the moto mod battery to charge
     //when to stop
-    int efficiency_trigger_level_stop = 81;
+    private int efficiency_trigger_level_stop = 81;
 
     //when to start using the moto mod battery to charge
-    int efficiency_trigger_level_start = 80;
+    private int efficiency_trigger_level_start = 80;
 
-    boolean efficiency_trigger = false;
-    boolean efficiency_enabled = true;
+    private boolean efficiency_trigger = false;
+    private boolean efficiency_enabled = true;
 
     private boolean set_charging_enabled(boolean enabled) {
         int _enabled = (enabled)?1:0;
@@ -65,7 +65,6 @@ public class MotoMobBatteryService extends Service {
         }
         return false;
     }
-
 
     private void do_gb_stuff(PowerInfo info) {
         String icon_percent;
@@ -126,35 +125,8 @@ public class MotoMobBatteryService extends Service {
             }
         }
     }
-    /*
-    private void create_icons() {
-        for(int idx = 0;idx < icon_percent.length;idx++) {
-            int icon_size = 8 * 12;
-            Bitmap bm = Bitmap.createBitmap(icon_size,icon_size,Bitmap.Config.ARGB_8888);
-            Canvas canvas = new Canvas(bm);
-            Paint paint = new Paint(Paint.SUBPIXEL_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG);
-            paint.setColor(Color.WHITE);
-            paint.setTextSize(50);
-            paint.setTypeface(Typeface.DEFAULT_BOLD);
-            if(idx < 100) {
-                canvas.drawText(String.format("% 2d%%", idx), -10, 50, paint);
-            } else {
-                canvas.drawText(String.format("% 3d", idx), -10, 50, paint);
-            }
-            canvas.drawText("BAT", 0, 90, paint);
-            icon_percent[idx] = Icon.createWithBitmap(bm);
-        }
-    }
 
-    public Icon get_icon(int icon_idx) {
-        if(icon_idx <= 100) {
-            return icon_percent[icon_idx];
-        }
-        return null;
-    }
-    */
-
-    public Notification buildNotification(String title, String body, String icon_percent, String icon_text) {
+    private Notification buildNotification(String title, String body, String icon_percent, String icon_text) {
         int icon_size = 8 * 12;
         Bitmap bm = Bitmap.createBitmap(icon_size,icon_size,Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bm);
@@ -189,35 +161,39 @@ public class MotoMobBatteryService extends Service {
         return builder.build();
     }
 
-    public void showNotification(String title, String body, String icon_percent, String icon_text) {
+    private void showNotification(String title, String body, String icon_percent, String icon_text) {
         notificationmanager.notify(1,buildNotification(title,body,icon_percent,icon_text));
     }
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
+    private void install_notification() {
         notificationmanager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationchannel = new NotificationChannel(CHANNEL_ID, CHANNEL_TAG, NotificationManager.IMPORTANCE_LOW);
         notificationchannel.setLightColor(Color.GREEN);
         notificationchannel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
         notificationmanager.createNotificationChannel(notificationchannel);
-        MotoModBatteryReceiver batter_reciever = new MotoModBatteryReceiver();
-        batter_reciever.setPassDate(new MotoModBatteryPassData() {
+    }
+
+    private void install_receiver() {
+        MotoModBatteryReceiver batter_receiver = new MotoModBatteryReceiver();
+        batter_receiver.setPassDate(new MotoModBatteryPassData() {
             @Override
             public void passData(Object data) {
                 do_gb_stuff((PowerInfo) data);
             }
         });
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(Intent.ACTION_POWER_CONNECTED);
-        intentFilter.addAction(Intent.ACTION_POWER_DISCONNECTED);
-        intentFilter.addAction(Intent.ACTION_BATTERY_CHANGED);
-        //batter_reciever.setApplicationContext(getApplicationContext());
-        //batter_reciever.set_efficiency_trigger_level_start(80);
-        //batter_reciever.set_efficiency_trigger_level_stop(85);
-        registerReceiver(batter_reciever,intentFilter);
-        Toast.makeText(this, "MotoMobBatteryService", Toast.LENGTH_LONG).show();
-        startForeground(1, buildNotification("Moto Mode Battery", "", "MOD", "BAT"));
+        IntentFilter intentfilter = new IntentFilter();
+        intentfilter.addAction(Intent.ACTION_POWER_CONNECTED);
+        intentfilter.addAction(Intent.ACTION_POWER_DISCONNECTED);
+        intentfilter.addAction(Intent.ACTION_BATTERY_CHANGED);
+        registerReceiver(batter_receiver,intentfilter);
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        install_notification();
+        install_receiver();
+        startForeground(1, buildNotification("Moto Mode battery", "", "MOD", "BAT"));
     }
 
     @Nullable
