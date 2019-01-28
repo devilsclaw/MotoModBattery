@@ -145,19 +145,19 @@ public class MotoMobBatteryService extends Service {
         builder.setAutoCancel(true);
         builder.setOngoing(true);
 
-        Intent efficiency_toggle = new Intent(this, MainActivity.class);
-        efficiency_toggle.setAction("EFFICIENCY_TOGGLE");
-        efficiency_toggle.putExtra(Notification.EXTRA_NOTIFICATION_ID, 0);
-        PendingIntent pending_efficiency_toggle = PendingIntent.getBroadcast(this, 0, efficiency_toggle, 0);
-        Notification.Action.Builder action_efficiency_toggle = new Notification.Action.Builder(icon,"EFFICIENCY ON",pending_efficiency_toggle);
-        builder.addAction(action_efficiency_toggle.build());
-
-        Intent efficiency_level = new Intent(this, MainActivity.class);
-        efficiency_level.setAction("EFFICIENCY_LEVEL");
-        efficiency_level.putExtra(Notification.EXTRA_NOTIFICATION_ID, 1);
-        PendingIntent pending_efficiency_level = PendingIntent.getBroadcast(this, 0, efficiency_level, 0);
-        Notification.Action.Builder action_efficiency_level = new Notification.Action.Builder(icon,"EFFICIENCY LEVEL",pending_efficiency_level);
-        builder.addAction(action_efficiency_level.build());
+//        Intent efficiency_toggle = new Intent(this, MainActivity.class);
+//        efficiency_toggle.setAction("EFFICIENCY_TOGGLE");
+//        efficiency_toggle.putExtra(Notification.EXTRA_NOTIFICATION_ID, 0);
+//        PendingIntent pending_efficiency_toggle = PendingIntent.getBroadcast(this, 0, efficiency_toggle, 0);
+//        Notification.Action.Builder action_efficiency_toggle = new Notification.Action.Builder(icon,"EFFICIENCY ON",pending_efficiency_toggle);
+//        builder.addAction(action_efficiency_toggle.build());
+//
+//        Intent efficiency_level = new Intent(this, MainActivity.class);
+//        efficiency_level.setAction("EFFICIENCY_LEVEL");
+//        efficiency_level.putExtra(Notification.EXTRA_NOTIFICATION_ID, 1);
+//        PendingIntent pending_efficiency_level = PendingIntent.getBroadcast(this, 0, efficiency_level, 0);
+//        Notification.Action.Builder action_efficiency_level = new Notification.Action.Builder(icon,"EFFICIENCY LEVEL",pending_efficiency_level);
+//        builder.addAction(action_efficiency_level.build());
         return builder.build();
     }
 
