@@ -295,8 +295,7 @@ public class MotoModBatteryReceiver extends BroadcastReceiver {
             case Intent.ACTION_POWER_CONNECTED:
             case Intent.ACTION_POWER_DISCONNECTED:
                 if(passdata != null) {
-                    PowerInfo info =  get_power_info();
-                    passdata.passData(info);
+                    passdata.passData(get_power_info());
                 }
                 break;
             case Intent.ACTION_MY_PACKAGE_REPLACED:
