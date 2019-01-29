@@ -11,41 +11,45 @@
         android:layout_width="359dp"
         android:layout_height="50dp"
         android:layout_marginStart="30dp"
+        android:layout_marginTop="34dp"
         android:layout_marginEnd="30dp"
         android:layout_marginBottom="21dp"
         android:max="100"
         android:min="0"
-        app:layout_constraintBottom_toTopOf="@+id/efficiency_trigger_high_text"
+        app:layout_constraintBottom_toTopOf="@+id/efficiency_trigger_high"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.405"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/efficiency_trigger_low_text" />
+        app:layout_constraintTop_toBottomOf="@+id/efficiency_toggle" />
 
     <com.devilsclaw.motomodbattery.SeekBarWithNumber
         android:id="@+id/efficiency_trigger_high"
         android:layout_width="359dp"
         android:layout_height="50dp"
         android:layout_marginStart="30dp"
+        android:layout_marginTop="21dp"
         android:layout_marginEnd="30dp"
-        android:layout_marginBottom="420dp"
+        android:layout_marginBottom="117dp"
         android:max="100"
         android:min="0"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.375"
+        app:layout_constraintHorizontal_bias="0.405"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/efficiency_trigger_high_text" />
+        app:layout_constraintTop_toBottomOf="@+id/efficiency_trigger_low" />
 
     <Switch
         android:id="@+id/efficiency_toggle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="30dp"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="40dp"
         android:layout_marginEnd="30dp"
-        android:layout_marginBottom="73dp"
+        android:layout_marginBottom="34dp"
         android:text="@string/switch_efficiency"
         app:layout_constraintBottom_toTopOf="@+id/efficiency_trigger_low"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -53,12 +57,14 @@
         android:id="@+id/efficiency_trigger_low_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="58dp"
-        android:layout_marginTop="131dp"
-        android:layout_marginEnd="278dp"
+        android:layout_marginStart="168dp"
+        android:layout_marginTop="81dp"
+        android:layout_marginEnd="440dp"
+        android:layout_marginBottom="7dp"
         android:text="@string/efficiency_trigger_low"
         app:layout_constraintBottom_toTopOf="@+id/efficiency_trigger_low"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -66,12 +72,42 @@
         android:id="@+id/efficiency_trigger_high_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="58dp"
-        android:layout_marginTop="21dp"
-        android:layout_marginEnd="275dp"
+        android:layout_marginStart="168dp"
+        android:layout_marginTop="2dp"
+        android:layout_marginEnd="437dp"
+        android:layout_marginBottom="7dp"
         android:text="@string/efficiency_trigger_high"
         app:layout_constraintBottom_toTopOf="@+id/efficiency_trigger_high"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/efficiency_trigger_low" />
+
+    <TextView
+        android:id="@+id/description1_text"
+        android:layout_width="642dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="5dp"
+        android:text="@string/description1_text"
+        app:layout_constraintBottom_toTopOf="@+id/description2_text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/efficiency_trigger_high" />
+
+    <TextView
+        android:id="@+id/description2_text"
+        android:layout_width="642dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="38dp"
+        android:text="@string/description2_text"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/description1_text" />
 </android.support.constraint.ConstraintLayout>

@@ -22,7 +22,7 @@ import android.widget.Toast;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-public class MotoMobBatteryService extends Service {
+public class MotoModBatteryService extends Service {
     private Icon[] icon_percent = new Icon[101];
     private NotificationManager notificationmanager = null;
     private NotificationChannel notificationchannel = null;

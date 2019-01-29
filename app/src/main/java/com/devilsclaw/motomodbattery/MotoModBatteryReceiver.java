@@ -1,28 +1,14 @@
 package com.devilsclaw.motomodbattery;
 
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Typeface;
-import android.graphics.drawable.Icon;
-import android.os.BatteryManager;
-import android.support.v4.app.NotificationCompat;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.Serializable;
 
 public class MotoModBatteryReceiver extends BroadcastReceiver {
 
@@ -280,7 +266,7 @@ public class MotoModBatteryReceiver extends BroadcastReceiver {
         return info;
     }
 
-    private PowerInfo get_power_info() {
+    public PowerInfo get_power_info() {
         PowerInfo info = new PowerInfo();
         info.greybus = get_gb_info();
         info.usb = get_usb_info();
@@ -299,10 +285,10 @@ public class MotoModBatteryReceiver extends BroadcastReceiver {
                 }
                 break;
             case Intent.ACTION_MY_PACKAGE_REPLACED:
-                context.startForegroundService(new Intent(context, MotoMobBatteryService.class));
+                context.startForegroundService(new Intent(context, MotoModBatteryService.class));
                 break;
             case Intent.ACTION_BOOT_COMPLETED:
-                context.startForegroundService(new Intent(context, MotoMobBatteryService.class));
+                context.startForegroundService(new Intent(context, MotoModBatteryService.class));
                 break;
             default:
                 Toast.makeText(context, intent.getAction(), Toast.LENGTH_LONG).show();

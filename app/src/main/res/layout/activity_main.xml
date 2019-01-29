@@ -6,17 +6,100 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <com.devilsclaw.motomodbattery.SeekBarWithNumber
+        android:id="@+id/efficiency_trigger_low"
+        android:layout_width="359dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginBottom="21dp"
+        android:max="100"
+        android:min="0"
+        app:layout_constraintBottom_toTopOf="@+id/efficiency_trigger_high_text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/efficiency_trigger_low_text" />
+
+    <com.devilsclaw.motomodbattery.SeekBarWithNumber
+        android:id="@+id/efficiency_trigger_high"
+        android:layout_width="359dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginBottom="420dp"
+        android:max="100"
+        android:min="0"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.375"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/efficiency_trigger_high_text" />
+
     <Switch
-        android:id="@+id/switch2"
+        android:id="@+id/efficiency_toggle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="155dp"
-        android:layout_marginTop="188dp"
-        android:layout_marginEnd="156dp"
-        android:layout_marginBottom="516dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="50dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginBottom="73dp"
         android:text="@string/switch_efficiency"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/efficiency_trigger_low"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/efficiency_trigger_low_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="58dp"
+        android:layout_marginTop="131dp"
+        android:layout_marginEnd="278dp"
+        android:text="@string/efficiency_trigger_low"
+        app:layout_constraintBottom_toTopOf="@+id/efficiency_trigger_low"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/efficiency_trigger_high_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="58dp"
+        android:layout_marginTop="21dp"
+        android:layout_marginEnd="275dp"
+        android:text="@string/efficiency_trigger_high"
+        app:layout_constraintBottom_toTopOf="@+id/efficiency_trigger_high"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/efficiency_trigger_low" />
+
+    <TextView
+        android:id="@+id/description1_text"
+        android:layout_width="333dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="39dp"
+        android:layout_marginTop="42dp"
+        android:layout_marginEnd="39dp"
+        android:layout_marginBottom="18dp"
+        android:text="@string/description1_text"
+        app:layout_constraintBottom_toTopOf="@+id/description2_text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/efficiency_trigger_high" />
+
+    <TextView
+        android:id="@+id/description2_text"
+        android:layout_width="333dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="39dp"
+        android:layout_marginTop="18dp"
+        android:layout_marginEnd="39dp"
+        android:layout_marginBottom="263dp"
+        android:text="@string/description2_text"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/description1_text" />
 </android.support.constraint.ConstraintLayout>
