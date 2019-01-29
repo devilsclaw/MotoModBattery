@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Moto Mod Battery</string>
+    <string name="switch_efficiency">Efficiency</string>
 </resources>
