@@ -299,6 +299,9 @@ public class MotoModBatteryReceiver extends BroadcastReceiver {
                     passdata.passData(info);
                 }
                 break;
+            case Intent.ACTION_MY_PACKAGE_REPLACED:
+                context.startForegroundService(new Intent(context, MotoMobBatteryService.class));
+                break;
             case Intent.ACTION_BOOT_COMPLETED:
                 context.startForegroundService(new Intent(context, MotoMobBatteryService.class));
                 break;
