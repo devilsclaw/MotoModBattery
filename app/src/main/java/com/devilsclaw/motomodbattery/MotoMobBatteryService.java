@@ -3,9 +3,7 @@ package com.devilsclaw.motomodbattery;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.Service;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -17,12 +15,8 @@ import android.graphics.Typeface;
 import android.graphics.drawable.Icon;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
-import android.widget.Toast;
-
-import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 
 public class MotoMobBatteryService extends Service {
     private Icon[] icon_percent = new Icon[101];
@@ -45,7 +39,7 @@ public class MotoMobBatteryService extends Service {
         int _enabled = (enabled)?1:0;
         Process p;
         try {
-            // Preform su to get root privledges
+            // Preform su to get root privileges
             p = Runtime.getRuntime().exec("su");
             DataOutputStream os = new DataOutputStream(p.getOutputStream());
             //battery_charging_enabled is not the one that controls charging

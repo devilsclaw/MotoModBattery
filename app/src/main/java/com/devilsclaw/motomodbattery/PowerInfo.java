@@ -1,8 +1,6 @@
 package com.devilsclaw.motomodbattery;
 
-import java.io.Serializable;
-
-public class PowerInfo implements Serializable {
+public class PowerInfo {
     public static final String BATTERY_STATUS_TEXT_UNKNOWN     = "Unknown";
     public static final String BATTERY_STATUS_TEXT_CHARGING    = "Charging";
     public static final String BATTERY_STATUS_TEXT_DISCHARGING = "Discharging";

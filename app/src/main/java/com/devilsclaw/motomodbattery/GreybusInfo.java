@@ -1,8 +1,6 @@
 package com.devilsclaw.motomodbattery;
 
-import java.io.Serializable;
-
-public class GreybusInfo implements Serializable {
+public class GreybusInfo {
     public boolean exists      = false;
     public int     capacity    = 0;
     public int     status      = PowerInfo.BATTERY_STATUS_UNKNOWN;
