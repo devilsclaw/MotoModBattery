@@ -36,7 +36,6 @@ public class MotoModBatteryService extends Service {
     //when to start using the moto mod battery to charge
     private int efficiency_trigger_level_low = 80;
 
-    private boolean efficiency_trigger = false;
     private boolean efficiency_enabled = true;
 
     private final IBinder mBinder = new Binder() {
@@ -115,17 +114,14 @@ public class MotoModBatteryService extends Service {
         if(info.greybus.exists) {
             if(efficiency_enabled) {
                 if(info.usb.charge_present) {
-                    efficiency_trigger = false;
                     if (!info.battery.charging_enabled) {
                         set_charging_enabled(true);
                     }
-                } else if (efficiency_trigger && info.battery.capacity >= efficiency_trigger_level_high) {
-                    efficiency_trigger = false;
+                } else if (info.battery.capacity >= efficiency_trigger_level_high) {
                     if (info.battery.charging_enabled) {
                         set_charging_enabled(false);
                     }
-                } else if(!efficiency_trigger && info.battery.capacity < efficiency_trigger_level_low) {
-                    efficiency_trigger = true;
+                } else if(info.battery.capacity < efficiency_trigger_level_low) {
                     if (!info.battery.charging_enabled) {
                         set_charging_enabled(true);
                     }
@@ -228,21 +224,18 @@ public class MotoModBatteryService extends Service {
             }
             switch(action) {
                 case ServiceReceiver.ACTION_EFFIENCY_SET_TOGGLE: {
-                    efficiency_trigger = false;
                     efficiency_enabled = intent.getBooleanExtra("value", true);
                     do_gb_stuff(PowerInfo.get_power_info());
                     save_setting();
                     break;
                }
                 case ServiceReceiver.ACTION_EFFIENCY_SET_TRIGGER_LOW: {
-                    efficiency_trigger = false;
                     efficiency_trigger_level_low = intent.getIntExtra("value", 80);
                     do_gb_stuff(PowerInfo.get_power_info());
                     save_setting();
                     break;
                 }
                 case ServiceReceiver.ACTION_EFFIENCY_SET_TRIGGER_HIGH: {
-                    efficiency_trigger = false;
                     efficiency_trigger_level_high = intent.getIntExtra("value", 81);
                     do_gb_stuff(PowerInfo.get_power_info());
                     save_setting();
