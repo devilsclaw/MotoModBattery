@@ -4,5 +4,5 @@
     <string name="efficiency_trigger_low">Trigger Low</string>
     <string name="efficiency_trigger_high">Trigger High</string>
     <string name="description1_text">Trigger Low: Start charging internal batter with Moto Mod battery at this level.</string>
-    <string name="description2_text">Trigger High: After Tigger Low happen then stop charging with Moto Mod battery at this level.</string>
+    <string name="description2_text">Trigger High: After Tigger Low happens it will stop charging from the Moto Mod battery at this level.</string>
 </resources>
