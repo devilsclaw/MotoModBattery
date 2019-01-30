@@ -14,21 +14,20 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.drawable.Icon;
+import android.os.Binder;
 import android.os.IBinder;
-import android.support.annotation.Nullable;
-import android.support.v4.content.LocalBroadcastManager;
-import android.widget.Toast;
-
 import java.io.DataOutputStream;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.File;
 
 public class MotoModBatteryService extends Service {
-    private Icon[] icon_percent = new Icon[101];
     private NotificationManager notificationmanager = null;
-    private NotificationChannel notificationchannel = null;
-    MotoModBatteryReceiver batter_receiver = null;
+    private MotoModBatteryReceiver batter_receiver = null;
     private static final String CHANNEL_ID  = "default";
     private static final String CHANNEL_TAG = "silent";
+    private static final String SETTINGS_FILE = "settings.bin";
 
     //once using the moto mod battery to charge
     //when to stop
@@ -39,6 +38,47 @@ public class MotoModBatteryService extends Service {
 
     private boolean efficiency_trigger = false;
     private boolean efficiency_enabled = true;
+
+    private final IBinder mBinder = new Binder() {
+        public MotoModBatteryService getService() {
+            return MotoModBatteryService.this;
+        }
+    };
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        return mBinder;
+    }
+
+    private void load_setting() {
+        try {
+            File file = new File(getFilesDir(), SETTINGS_FILE);
+            if(!file.exists()) {
+                save_setting();
+                return;
+            }
+
+            FileInputStream fis = openFileInput(SETTINGS_FILE);
+            efficiency_enabled = fis.read() == 1;
+            efficiency_trigger_level_low = fis.read();
+            efficiency_trigger_level_high = fis.read();
+            fis.close();
+        } catch (Exception e) {
+
+        }
+    }
+
+    private void save_setting() {
+        try {
+            FileOutputStream fos = openFileOutput(SETTINGS_FILE,Context.MODE_PRIVATE);
+            fos.write((efficiency_enabled)?1:0);
+            fos.write(efficiency_trigger_level_low);
+            fos.write(efficiency_trigger_level_high);
+            fos.close();
+        } catch (Exception e) {
+
+        }
+    }
 
     private boolean set_charging_enabled(boolean enabled) {
         int _enabled = (enabled)?1:0;
@@ -74,21 +114,20 @@ public class MotoModBatteryService extends Service {
         }
         if(info.greybus.exists) {
             if(efficiency_enabled) {
-                if (info.usb.charge_present ||
-                        ((efficiency_trigger) && info.battery.capacity < efficiency_trigger_level_high) ||
-                        ((!efficiency_trigger) && info.battery.capacity < efficiency_trigger_level_low)
-                ) {
-                    if (info.battery.capacity < efficiency_trigger_level_low) {
-                        efficiency_trigger = true;
-                    } else if (info.usb.charge_present || info.battery.capacity >= efficiency_trigger_level_high) {
-                        efficiency_trigger = false;
-                    }
+                if(info.usb.charge_present) {
+                    efficiency_trigger = false;
                     if (!info.battery.charging_enabled) {
                         set_charging_enabled(true);
                     }
-                } else {
+                } else if (efficiency_trigger && info.battery.capacity >= efficiency_trigger_level_high) {
+                    efficiency_trigger = false;
                     if (info.battery.charging_enabled) {
                         set_charging_enabled(false);
+                    }
+                } else if(!efficiency_trigger && info.battery.capacity < efficiency_trigger_level_low) {
+                    efficiency_trigger = true;
+                    if (!info.battery.charging_enabled) {
+                        set_charging_enabled(true);
                     }
                 }
             }
@@ -151,19 +190,6 @@ public class MotoModBatteryService extends Service {
         builder.setAutoCancel(true);
         builder.setOngoing(true);
 
-//        Intent efficiency_toggle = new Intent(this, MainActivity.class);
-//        efficiency_toggle.setAction("EFFICIENCY_TOGGLE");
-//        efficiency_toggle.putExtra(Notification.EXTRA_NOTIFICATION_ID, 0);
-//        PendingIntent pending_efficiency_toggle = PendingIntent.getBroadcast(this, 0, efficiency_toggle, 0);
-//        Notification.Action.Builder action_efficiency_toggle = new Notification.Action.Builder(icon,"EFFICIENCY ON",pending_efficiency_toggle);
-//        builder.addAction(action_efficiency_toggle.build());
-//
-//        Intent efficiency_level = new Intent(this, MainActivity.class);
-//        efficiency_level.setAction("EFFICIENCY_LEVEL");
-//        efficiency_level.putExtra(Notification.EXTRA_NOTIFICATION_ID, 1);
-//        PendingIntent pending_efficiency_level = PendingIntent.getBroadcast(this, 0, efficiency_level, 0);
-//        Notification.Action.Builder action_efficiency_level = new Notification.Action.Builder(icon,"EFFICIENCY LEVEL",pending_efficiency_level);
-//        builder.addAction(action_efficiency_level.build());
         return builder.build();
     }
 
@@ -173,43 +199,80 @@ public class MotoModBatteryService extends Service {
 
     private void install_notification() {
         notificationmanager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationchannel = new NotificationChannel(CHANNEL_ID, CHANNEL_TAG, NotificationManager.IMPORTANCE_LOW);
+        NotificationChannel notificationchannel = new NotificationChannel(CHANNEL_ID, CHANNEL_TAG, NotificationManager.IMPORTANCE_LOW);
         notificationchannel.setLightColor(Color.GREEN);
         notificationchannel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
         notificationmanager.createNotificationChannel(notificationchannel);
     }
 
     public class ServiceReceiver extends BroadcastReceiver {
-        public static final String ACTION_EFFIENCY_TOGGLE = "com.devilsclaw.action.ACTION_EFFIENCY_TOGGLE";
-        public static final String ACTION_EFFIENCY_TRIGGER_LOW = "com.devilsclaw.action.ACTION_EFFIENCY_TRIGGER_LOW";
-        public static final String ACTION_EFFIENCY_TRIGGER_HIGH = "com.devilsclaw.action.ACTION_EFFIENCY_TRIGGER_HIGH";
+        public static final String ACTION_EFFIENCY_SET_TOGGLE = "com.devilsclaw.action.ACTION_EFFIENCY_SET_TOGGLE";
+        public static final String ACTION_EFFIENCY_SET_TRIGGER_LOW = "com.devilsclaw.action.ACTION_EFFIENCY_SET_TRIGGER_LOW";
+        public static final String ACTION_EFFIENCY_SET_TRIGGER_HIGH = "com.devilsclaw.action.ACTION_EFFIENCY_SET_TRIGGER_HIGH";
+        public static final String ACTION_EFFIENCY_GET_TOGGLE = "com.devilsclaw.action.ACTION_EFFIENCY_GET_TOGGLE";
+        public static final String ACTION_EFFIENCY_GET_TRIGGER_LOW = "com.devilsclaw.action.ACTION_EFFIENCY_GET_TRIGGER_LOW";
+        public static final String ACTION_EFFIENCY_GET_TRIGGER_HIGH = "com.devilsclaw.action.ACTION_EFFIENCY_GET_TRIGGER_HIGH";
+        public static final String ACTION_EFFIENCY_REP_TOGGLE = "com.devilsclaw.action.ACTION_EFFIENCY_REP_TOGGLE";
+        public static final String ACTION_EFFIENCY_REP_TRIGGER_LOW = "com.devilsclaw.action.ACTION_EFFIENCY_REP_TRIGGER_LOW";
+        public static final String ACTION_EFFIENCY_REP_TRIGGER_HIGH = "com.devilsclaw.action.ACTION_EFFIENCY_REP_TRIGGER_HIGH";
         @Override
         public void onReceive(Context context, Intent intent) {
-            switch(intent.getAction()) {
-                case ServiceReceiver.ACTION_EFFIENCY_TOGGLE:
+            if(intent == null) {
+                return;
+            }
+            String action = intent.getAction();
+            if(action == null) {
+                return;
+            }
+            switch(action) {
+                case ServiceReceiver.ACTION_EFFIENCY_SET_TOGGLE: {
                     efficiency_trigger = false;
                     efficiency_enabled = intent.getBooleanExtra("value", true);
-                    do_gb_stuff(batter_receiver.get_power_info());
-                    Toast.makeText(context, String.format("efficiency_enabled = %s",efficiency_enabled), Toast.LENGTH_LONG).show();
+                    do_gb_stuff(PowerInfo.get_power_info());
+                    save_setting();
                     break;
-                case ServiceReceiver.ACTION_EFFIENCY_TRIGGER_LOW:
+               }
+                case ServiceReceiver.ACTION_EFFIENCY_SET_TRIGGER_LOW: {
                     efficiency_trigger = false;
-                    efficiency_trigger_level_low = intent.getIntExtra("value",80);
-                    do_gb_stuff(batter_receiver.get_power_info());
-                    Toast.makeText(context, String.format("efficiency_trigger_level_low = %d",efficiency_trigger_level_low), Toast.LENGTH_LONG).show();
+                    efficiency_trigger_level_low = intent.getIntExtra("value", 80);
+                    do_gb_stuff(PowerInfo.get_power_info());
+                    save_setting();
                     break;
-                case ServiceReceiver.ACTION_EFFIENCY_TRIGGER_HIGH:
+                }
+                case ServiceReceiver.ACTION_EFFIENCY_SET_TRIGGER_HIGH: {
                     efficiency_trigger = false;
-                    efficiency_trigger_level_high = intent.getIntExtra("value",81);
-                    do_gb_stuff(batter_receiver.get_power_info());
-                    Toast.makeText(context, String.format("efficiency_trigger_level_high = %d",efficiency_trigger_level_high), Toast.LENGTH_LONG).show();
+                    efficiency_trigger_level_high = intent.getIntExtra("value", 81);
+                    do_gb_stuff(PowerInfo.get_power_info());
+                    save_setting();
                     break;
+                }
+                case ServiceReceiver.ACTION_EFFIENCY_GET_TOGGLE: {
+                    Intent replyintent = new Intent();
+                    replyintent.setAction(ServiceReceiver.ACTION_EFFIENCY_REP_TOGGLE);
+                    replyintent.putExtra("value", efficiency_enabled);
+                    sendBroadcast(replyintent);
+                    break;
+                }
+                case ServiceReceiver.ACTION_EFFIENCY_GET_TRIGGER_LOW: {
+                    Intent replyintent = new Intent();
+                    replyintent.setAction(ServiceReceiver.ACTION_EFFIENCY_REP_TRIGGER_LOW);
+                    replyintent.putExtra("value", efficiency_trigger_level_low);
+                    sendBroadcast(replyintent);
+                    break;
+                }
+                case ServiceReceiver.ACTION_EFFIENCY_GET_TRIGGER_HIGH: {
+                    Intent replyintent = new Intent();
+                    replyintent.setAction(ServiceReceiver.ACTION_EFFIENCY_REP_TRIGGER_HIGH);
+                    replyintent.putExtra("value", efficiency_trigger_level_high);
+                    sendBroadcast(replyintent);
+                    break;
+                }
             }
         }
     }
     private void install_receiver() {
         batter_receiver = new MotoModBatteryReceiver();
-        batter_receiver.setPassDate(new MotoModBatteryPassData() {
+        batter_receiver.setPassDate(new MotoModBatteryReceiver.PassData() {
             @Override
             public void passData(Object data) {
                 do_gb_stuff((PowerInfo) data);
@@ -223,9 +286,12 @@ public class MotoModBatteryService extends Service {
 
         ServiceReceiver service_receiver = new ServiceReceiver();
         intentfilter = new IntentFilter();
-        intentfilter.addAction(ServiceReceiver.ACTION_EFFIENCY_TOGGLE);
-        intentfilter.addAction(ServiceReceiver.ACTION_EFFIENCY_TRIGGER_LOW);
-        intentfilter.addAction(ServiceReceiver.ACTION_EFFIENCY_TRIGGER_HIGH);
+        intentfilter.addAction(ServiceReceiver.ACTION_EFFIENCY_SET_TOGGLE);
+        intentfilter.addAction(ServiceReceiver.ACTION_EFFIENCY_SET_TRIGGER_LOW);
+        intentfilter.addAction(ServiceReceiver.ACTION_EFFIENCY_SET_TRIGGER_HIGH);
+        intentfilter.addAction(ServiceReceiver.ACTION_EFFIENCY_GET_TOGGLE);
+        intentfilter.addAction(ServiceReceiver.ACTION_EFFIENCY_GET_TRIGGER_LOW);
+        intentfilter.addAction(ServiceReceiver.ACTION_EFFIENCY_GET_TRIGGER_HIGH);
         registerReceiver(service_receiver,intentfilter);
     }
 
@@ -234,6 +300,7 @@ public class MotoModBatteryService extends Service {
         super.onCreate();
         install_notification();
         install_receiver();
+        load_setting();
         startForeground(1, buildNotification("Moto Mode battery", "", "MOD", "BAT"));
     }
 
@@ -241,12 +308,6 @@ public class MotoModBatteryService extends Service {
     public void onDestroy() {
         unregisterReceiver(batter_receiver);
         super.onDestroy();
-    }
-
-    @Nullable
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
     }
 
     @Override
