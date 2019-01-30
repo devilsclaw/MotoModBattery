@@ -130,6 +130,8 @@ public class MotoModBatteryService extends Service {
                         set_charging_enabled(true);
                     }
                 }
+            } else {
+                //This case has already been handled above.
             }
             if(info.greybus.capacity < 100) {
                 icon_percent = String.format("% 2d%%", info.greybus.capacity);
